@@ -71,9 +71,29 @@ app.post('/item', function(req, res) {
 			});
 		}
 	});
+});
 
-	// res.send('lets show them');
-	// knex('items').insert
+app.post('/swap', function(req, res) {
+    var authCode = req.param('code');
+    // request.debug = true;
+    request.post({
+    	uri: config.SPT_TOKEN_ENDPOINT,
+    	headers: {
+    		"Authorization": config.SPT_AUTH_HEADER
+    	},
+    	form: {
+	        grant_type: 'authorization_code',
+	        redirect_uri: config.SPT_CLIENT_CALLBACK_URL,
+	        code: authCode
+    	},
+    	json: true
+    }, function(error, response, body) {
+    	if(response.statusCode == 200) {
+    		//should symmetrically encrypt refresh_token before forwarding to client
+    	}
+
+    	res.status(response.statusCode).send(body);
+    });
 });
 
 app.listen(port);

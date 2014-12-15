@@ -1,6 +1,8 @@
 branch-defaults:
   default:
     environment: spikebackend
+  master:
+    environment: spikebackend
 global:
   application_name: spikebackend
   default_ec2_keyname: pear
