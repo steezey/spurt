@@ -27,6 +27,7 @@ app.get('/items', function(req, res) {
 		.then(function(items) {
 			var filtered = _.map(items, function(item) {
 				return {
+					id: item.id,
 					title: item.title,
 					content: S(item.content).stripTags().s,
 					source: item.provider_name
