@@ -23,11 +23,13 @@ app.get('/items', function(req, res) {
 	knex('entries')
 		.orderBy('entries.id', 'desc')
 		.leftJoin('items', 'entries.item_id', 'items.id')
-		.select('*', 'entries.id')
+		.leftJoin('boards', 'entries.board_id', 'boards.id')
+		.select('*', 'entries.id', 'boards.color')
 		.then(function(items) {
 			var filtered = _.map(items, function(item) {
 				return {
 					id: item.id.toString(),
+					color: item.color,
 					title: item.title,
 					content: S(item.content).stripTags().s,
 					source: item.provider_name
@@ -45,7 +47,8 @@ app.post('/item', function(req, res) {
 	knex('items').where('original_url', url).first().then(function(item) {
 		if (item) {
 			knex('entries').insert({
-				item_id: item.id
+				item_id: item.id,
+				board_id: 1
 			}).then(function() {
 				res.send('done');
 			});
@@ -64,7 +67,8 @@ app.post('/item', function(req, res) {
 				knex('items').insert(insertObj).then(function(inserted) {
 					var id = inserted[0];
 					knex('entries').insert({
-						item_id: id
+						item_id: id,
+						board_id: 1
 					}).then(function() {
 						res.send('success');
 					});
