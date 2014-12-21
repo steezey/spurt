@@ -40,6 +40,7 @@ app.get('/items', function(req, res) {
 			var filtered = _.map(items, function(item) {
 				return {
 					id: item.id.toString(),
+					url: item.url,
 					color: item.color,
 					title: item.title,
 					content: cleanContent(item.content),
@@ -58,7 +59,7 @@ app.post('/item', function(req, res) {
 	knex('items').where('original_url', url).first().then(function(item) {
 		if (item) {
 			var data = {
-				id: '' + item.id,
+				id: item.id.toString(),
 				title: item.title,
 				content: cleanContent(item.content) || item.description,
 				provider_display: cleanProviderDisplay(item.provider_display)
@@ -81,7 +82,7 @@ app.post('/item', function(req, res) {
 				knex('items').insert(insertObj).then(function(inserted) {
 					var id = inserted[0];
 					var data = {
-						id: '' + id,
+						id: id.toString(),
 						title: insertObj.title,
 						content: cleanContent(insertObj.content) || insertObj.description,
 						provider_display: cleanProviderDisplay(insertObj.provider_display)
