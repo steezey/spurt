@@ -10,6 +10,17 @@ var express = require('express'),
 	_ = require('underscore'),
 	S = require('string');
 
+function cleanProviderDisplay(display) {
+	if (display.indexOf('www.') === 0) {
+		return display.slice(4);
+	}
+	return display;
+}
+
+function cleanContent(content) {
+	return S(content).stripTags().s
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
@@ -31,7 +42,7 @@ app.get('/items', function(req, res) {
 					id: item.id.toString(),
 					color: item.color,
 					title: item.title,
-					content: S(item.content).stripTags().s,
+					content: cleanContent(item.content),
 					source: item.provider_name
 				};
 			});
@@ -46,12 +57,13 @@ app.post('/item', function(req, res) {
 	var embedlyurl = 'http://api.embed.ly/1/extract?key='+config.embedly.key+'&url='+encodedurl;
 	knex('items').where('original_url', url).first().then(function(item) {
 		if (item) {
-			knex('entries').insert({
-				item_id: item.id,
-				board_id: 1
-			}).then(function() {
-				res.send('done');
-			});
+			var data = {
+				id: '' + item.id,
+				title: item.title,
+				content: cleanContent(item.content) || item.description,
+				provider_display: cleanProviderDisplay(item.provider_display)
+			}
+			res.send(data);
 		} else {
 			request.get(embedlyurl, function(error, response, body) {
 				body = JSON.parse(body);
@@ -62,21 +74,45 @@ app.post('/item', function(req, res) {
 					content: body.content || '',
 					original_url: body.original_url || '',
 					description: body.description || '',
-					provider_name: body.provider_name || ''
+					provider_name: body.provider_name || '',
+					provider_display: body.provider_display || '',
+					favicon_url: body.favicon_url || ''
 				};
 				knex('items').insert(insertObj).then(function(inserted) {
 					var id = inserted[0];
-					knex('entries').insert({
-						item_id: id,
-						board_id: 1
-					}).then(function() {
-						res.send('success');
-					});
+					var data = {
+						id: '' + id,
+						title: insertObj.title,
+						content: cleanContent(insertObj.content) || insertObj.description,
+						provider_display: cleanProviderDisplay(insertObj.provider_display)
+					}
+					res.send(data);
 				});
 			});
 		}
 	});
 });
+
+app.post('/entry', function(req, res) {
+	var item_id = req.body.item_id;
+	if (!item_id) {
+		res.status(500).send({error: 'something wrong happened'});
+		return;
+	}
+
+	knex('items').where('id', item_id).first().then(function(item) {
+		if (item) {
+			knex('entries').insert({
+				item_id: item.id,
+				board_id: 1
+			}).then(function() {
+				res.send('success');
+			});
+		} else {
+			res.status(500).send({error: 'something wrong happened'});
+		}
+	});
+})
 
 app.post('/swap', function(req, res) {
     var authCode = req.param('code');
