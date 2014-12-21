@@ -1,4 +1,4 @@
-spurt Repo
+Spurt Repo
 -------------------------------
 
 This repository houses the node.js code that serves the backend for the university community iPhone app
