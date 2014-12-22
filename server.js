@@ -41,6 +41,7 @@ app.get('/items', function(req, res) {
 				return {
 					id: item.id.toString(),
 					url: item.url,
+					public: item.public ? '1' : '0',
 					color: item.color,
 					title: item.title,
 					content: cleanContent(item.content),
@@ -97,7 +98,8 @@ app.post('/item', function(req, res) {
 app.post('/entry', function(req, res) {
 	var item_id = req.body.item_id;
 	var item_title = req.body.title;
-	if (!item_id || !item_title) {
+	var item_public = req.body.public
+	if (!item_id || !item_title || typeof item_public == 'undefined') {
 		res.status(500).send({error: 'something wrong happened'});
 		return;
 	}
@@ -107,7 +109,8 @@ app.post('/entry', function(req, res) {
 			knex('entries').insert({
 				item_id: item.id,
 				board_id: 1,
-				title: item_title
+				title: item_title,
+				public: item_public == '1' ? true : false
 			}).then(function() {
 				res.send('success');
 			});
