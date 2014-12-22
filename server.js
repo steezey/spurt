@@ -35,7 +35,7 @@ app.get('/items', function(req, res) {
 		.orderBy('entries.id', 'desc')
 		.leftJoin('items', 'entries.item_id', 'items.id')
 		.leftJoin('boards', 'entries.board_id', 'boards.id')
-		.select('*', 'entries.id', 'boards.color')
+		.select('*', 'entries.id', 'boards.color', 'entries.title')
 		.then(function(items) {
 			var filtered = _.map(items, function(item) {
 				return {
@@ -96,7 +96,8 @@ app.post('/item', function(req, res) {
 
 app.post('/entry', function(req, res) {
 	var item_id = req.body.item_id;
-	if (!item_id) {
+	var item_title = req.body.title;
+	if (!item_id || !item_title) {
 		res.status(500).send({error: 'something wrong happened'});
 		return;
 	}
@@ -105,7 +106,8 @@ app.post('/entry', function(req, res) {
 		if (item) {
 			knex('entries').insert({
 				item_id: item.id,
-				board_id: 1
+				board_id: 1,
+				title: item_title
 			}).then(function() {
 				res.send('success');
 			});
