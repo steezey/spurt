@@ -7,9 +7,6 @@ exports.seed = function(knex, Promise) {
 			{ name: 'music', color: 'FC5E00' },
 			{ name: 'literature', color: 'FFDC1E' },
 			{ name: 'tv', color: 'B70FD9' }
-		]),
-		knex('entries').update({
-			board_id: 1
-		})
+		])
 	]);
 };

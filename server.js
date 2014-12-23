@@ -35,6 +35,7 @@ app.get('/items', function(req, res) {
 		.orderBy('entries.id', 'desc')
 		.leftJoin('items', 'entries.item_id', 'items.id')
 		.leftJoin('boards', 'entries.board_id', 'boards.id')
+		.where('entries.public', '1')
 		.select('*', 'entries.id', 'boards.color', 'entries.title')
 		.then(function(items) {
 			var filtered = _.map(items, function(item) {
