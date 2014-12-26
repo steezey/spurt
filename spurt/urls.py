@@ -1,11 +1,13 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
+from spurt import views
+
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^items/create', spurt.views.create),
-    url(r'^items/edit', spurt.views.edit),
-    url(r'^items/publish', spurt.views.publish),
-    url(r'^items/inbox', spurt.views.inbox),
-    url(r'^items/public', spurt.views.public),
+    url(r'^items/create', views.item_create),
+    url(r'^items/edit', views.item_edit),
+    url(r'^items/publish', views.item_publish),
+    url(r'^items/inbox', views.item_inbox),
+    url(r'^items/public', views.item_public),
 )
