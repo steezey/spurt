@@ -1,4 +1,8 @@
 branch-defaults:
+  default:
+    environment: spurt-dev
+  master:
+    environment: spurt-dev
   django:
     environment: spurt-dev
 global:
