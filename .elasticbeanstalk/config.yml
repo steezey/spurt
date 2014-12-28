@@ -1,10 +1,6 @@
 branch-defaults:
-  default:
-    environment: spurt-dev
   master:
-    environment: spurt-dev
-  django:
-    environment: spurt-dev
+    environment: spurt-django
 global:
   application_name: spurt
   default_ec2_keyname: aws-eb
