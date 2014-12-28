@@ -26,11 +26,9 @@ class Item(Model, JSONable):
     creation_date = DateTimeField(auto_now_add = True)
     published = BooleanField(default = False)
     url = URLField()
-    original_url = URLField() # perhaps prune this
+    original_url = URLField()
     content = TextField()
     description = TextField()
-    
-    # perhaps prune these:
     provider_name = CharField(max_length = 255)
     provider_display = TextField()
     favicon_url = URLField()
