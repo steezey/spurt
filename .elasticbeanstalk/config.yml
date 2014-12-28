@@ -1,0 +1,10 @@
+branch-defaults:
+  django:
+    environment: spurt-dev
+global:
+  application_name: spurt
+  default_ec2_keyname: aws-eb
+  default_platform: Python 3.4 (Preconfigured - Docker)
+  default_region: us-west-2
+  profile: eb-cli
+  sc: git
