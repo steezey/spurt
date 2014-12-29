@@ -9,16 +9,16 @@ also these names are not necessary to keep
 
 new endpoints:
 make a new link post (skip saving to inbox first)
-	- udid
+	- uuid
 	- link
 	- title
 	- description
 make a new text post
-	- udid
+	- uuid
 	- title
 	- content
 create comment
 	- commentparentid (optional)
 	- postid
-	- udid
-	- content comment
+	- uuid
+	- comment content

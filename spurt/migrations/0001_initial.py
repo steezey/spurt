@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=255)),
-                ('authorUDID', models.CharField(max_length=255)),
+                ('authorUUID', models.CharField(max_length=255)),
                 ('creation_date', models.DateTimeField(auto_now_add=True)),
                 ('published', models.BooleanField(default=False)),
                 ('url', models.URLField()),

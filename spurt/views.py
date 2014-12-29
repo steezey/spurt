@@ -33,10 +33,10 @@ def embedlify(url):
 
 @csrf_exempt
 def item_create(request):
-    # POST: url, udid
+    # POST: url, uuid
     
     item = Item()
-    item.authorUDID = request.POST['udid']
+    item.authorUUID = request.POST['uuid']
     
     embedly = embedlify(request.POST['url'])
     for attribute in [
@@ -53,16 +53,16 @@ def item_create(request):
 
 @csrf_exempt
 def item_edit(request):
-    # POST: title, description, id, and authorUDID
+    # POST: title, description, id, and authorUUID
     
     items = list(Item.objects.filter(
         id = request.POST['id'],
-        authorUDID = request.POST['udid']))
+        authorUUID = request.POST['uuid']))
     
     if len(items) == 0:
         return failure(message = 
             'Cannot find item with id "' + request.POST['id'] + \
-            ' and udid ' + request.POST['udid'])
+            ' and uuid ' + request.POST['uuid'])
     else:
         item = items[0]
         item.title = request.POST['title']
@@ -75,7 +75,7 @@ def item_publish(request):
     try:
         item = Item.objects.get(
             id = request.POST['id'],
-            authorUDID = request.POST['udid'])
+            authorUUID = request.POST['uuid'])
         item.title = request.POST['title']
         item.description = request.POST['description']
         item.published = True
@@ -84,16 +84,16 @@ def item_publish(request):
     except DoesNotExist:
         return failure(message = 
             'Cannot find item with id "' + request.POST['id'] + \
-            ' and udid ' + request.POST['udid'])
+            ' and uuid ' + request.POST['uuid'])
 
 def item_inbox(request):
-    # GET: udid
+    # GET: uuid
     
     return HttpResponse(
         json.dumps(list(map(
             (lambda item: item.as_json_dict()),
             Item.objects.filter(
-                authorUDID = request.GET['udid'])))))
+                authorUUID = request.GET['uuid'])))))
 
 def item_public(request):
     return HttpResponse(
