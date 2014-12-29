@@ -22,7 +22,7 @@ class JSONable:
 
 class Item(Model, JSONable):
     title = CharField(max_length = 255)
-    authorUIUD = CharField(max_length = 255)
+    authorUDID = CharField(max_length = 255)
     creation_date = DateTimeField(auto_now_add = True)
     published = BooleanField(default = False)
     url = URLField()
