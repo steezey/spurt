@@ -11,5 +11,3 @@ urlpatterns = patterns('',
     url(r'^items/inbox', views.item_inbox),
     url(r'^items/public', views.item_public),
 )
-
-print('ELEPHANT URLS')

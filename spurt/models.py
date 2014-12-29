@@ -3,8 +3,6 @@ from django.db.models import Model, BooleanField, NullBooleanField, CommaSeparat
 
 import json
 
-print('ELEPHANT MODELS')
-
 class JSONable:
     def as_json_dict(self):
         return \
