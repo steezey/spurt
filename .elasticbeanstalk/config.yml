@@ -3,7 +3,7 @@ branch-defaults:
     environment: spurt
 global:
   application_name: spurt
-  default_ec2_keyname: pear
+  default_ec2_keyname: aws-eb
   default_platform: Python
   default_region: us-west-1
   profile: eb-cli
