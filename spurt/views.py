@@ -1,4 +1,5 @@
 
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 from spurt.models import Item
