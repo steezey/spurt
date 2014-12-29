@@ -5,7 +5,12 @@ from spurt.models import Item
 from django.http import HttpResponse
 
 import urllib
-from urllib import request
+
+# python 3.4:
+# from urllib import request
+
+# python 2.7:
+request = urllib
 
 def success(**dictionary):
     dictionary['status'] = 'success'

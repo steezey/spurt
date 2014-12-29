@@ -20,11 +20,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'zehuh9n3*xly-)xz4*1(39d_fo68s0h_z@yifvpm4zyo+*1)p-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+try:
+    from local_settings import *
+except Exception:
+    pass
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition
@@ -57,8 +64,14 @@ WSGI_APPLICATION = 'spurt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-# if 'RDS_DB_NAME' in os.environ:
-if True:
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        },
+    }
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -68,13 +81,6 @@ if True:
             'HOST': 'restore.cdy2lzrsyzbw.us-west-1.rds.amazonaws.com',
             'PORT': '3306',
         }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        },
     }
 
 # Internationalization
