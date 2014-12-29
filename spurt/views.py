@@ -12,6 +12,7 @@ import urllib
 # python 2.7:
 request = urllib
 
+print('ELEPHANT VIEWS')
 
 def success(**dictionary):
     dictionary['status'] = 'success'

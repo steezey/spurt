@@ -65,6 +65,8 @@ WSGI_APPLICATION = 'spurt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+print('ELEPHANT 1')
+
 if DEBUG:
     DATABASES = {
         'default': {
