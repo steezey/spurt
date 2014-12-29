@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: spurt
+    environment: spurted2
 global:
   application_name: spurt
   default_ec2_keyname: aws-eb
