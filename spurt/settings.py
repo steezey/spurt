@@ -30,8 +30,7 @@ except Exception:
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    'elasticbeanstalk.com',
+    '*'
 ]
 
 
