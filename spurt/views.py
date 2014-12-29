@@ -30,6 +30,7 @@ def embedlify(url):
             urllib.quote(url))\
         .read())
 
+@csrf_exempt
 def item_create(request):
     # POST: url, udid
     
@@ -49,6 +50,7 @@ def item_create(request):
     
     return success(id = item.id)
 
+@csrf_exempt
 def item_edit(request):
     # POST: title, description, id, and authorUDID
     
@@ -67,6 +69,7 @@ def item_edit(request):
         item.save()
         return success()
 
+@csrf_exempt
 def item_publish(request):
     try:
         item = Item.objects.get(
