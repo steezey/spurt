@@ -6,7 +6,7 @@ from spurt import views
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     # Create new item. POST: url, udid
-    url(r'^items/create', csrf_exempt(views.item_create)),
+    url(r'^items/create', views.item_create),
     # Edit item. POST: title, description, id, and authorUDID
     url(r'^items/edit', views.item_edit),
     # Publish item. GET: udid
