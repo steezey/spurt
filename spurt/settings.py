@@ -23,8 +23,7 @@ SECRET_KEY = 'zehuh9n3*xly-)xz4*1(39d_fo68s0h_z@yifvpm4zyo+*1)p-'
 DEBUG = False
 
 try:
-    pass
-    # from local_settings import *
+    from local_settings import *
 except Exception:
     pass
 
