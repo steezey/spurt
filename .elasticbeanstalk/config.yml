@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: spurtapp
+    environment: spurty
 global:
   application_name: spurtapp
   default_ec2_keyname: pear
