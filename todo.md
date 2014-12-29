@@ -5,6 +5,7 @@ posts can be either text or link posts (text posts cannot be saved as drafts in 
 posts have comments which may each further have subcomments (for now no deleting any comments)
 
 for each field, you decide which mysql field each parameter should be
+also these names are not necessary to keep
 
 new endpoints:
 make a new link post (skip saving to inbox first)
@@ -17,6 +18,7 @@ make a new text post
 	- title
 	- content
 create comment
-	- parentid (optional)
+	- commentparentid (optional)
+	- postid
 	- udid
 	- comment content
