@@ -21,4 +21,4 @@ create comment
 	- commentparentid (optional)
 	- postid
 	- udid
-	- comment content
+	- content comment
