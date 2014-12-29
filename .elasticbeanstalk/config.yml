@@ -1,10 +1,10 @@
 branch-defaults:
   master:
-    environment: spurted2
+    environment: spurted
 global:
   application_name: spurt
-  default_ec2_keyname: aws-eb
-  default_platform: Python
+  default_ec2_keyname: pear
+  default_platform: 64bit Amazon Linux 2014.09 v1.0.9 running Python 2.7
   default_region: us-west-1
   profile: eb-cli
   sc: git
