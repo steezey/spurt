@@ -93,7 +93,9 @@ def item_inbox(request):
             Item.objects.filter(
                 authorUIUD = request.GET['uiud'])))))
 
+print('ELEPHANT prepare public request')
 def item_public(request):
+    print('ELEPHANT public request')
     return HttpResponse(
         json.dumps(list(map(
             (lambda item: item.as_json_dict()),
