@@ -7,7 +7,7 @@ class JSONable:
     def as_json_dict(self):
         dictionary = {}
         for key in self.json_attributes:
-            if key[-4:-1] == '_set':
+            if key[-4:] == '_set':
                 dictionary[key[:-4] + 's'] = list(map(
                     (lambda thing: thing.as_json_dict()),
                     self.__dict__[key].all()))
