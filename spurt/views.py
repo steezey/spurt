@@ -91,8 +91,6 @@ def linkpost_publish(request):
         LinkPost,
         id = request.POST['id'],
         uuid = request.POST['uuid'])
-    linkpost.title = request.POST['title']
-    linkpost.description = request.POST['description']
     linkpost.published = True
     linkpost.save()
     return success()
