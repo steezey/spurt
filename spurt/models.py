@@ -51,7 +51,7 @@ class TextPost(Post, JSONable):
     json_attributes = ['id', 'title', 'published', 'content']
 
 class Comment(Model, JSONable):
-    parent = ForeignKey('Comment')
+    parent = ForeignKey('Comment', null = True)
     post = ForeignKey(Post)
     uuid = CharField(max_length = 255)
     content = TextField()
