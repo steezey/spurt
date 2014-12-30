@@ -5,8 +5,14 @@ import json
 
 class JSONable:
     def as_json_dict(self):
-        return \
-            {k: self.__dict__[k] for k in self.json_attributes}
+        dictionary = {}
+        for key in self.json_attributes:
+            if key[-4:-1] == '_set':
+                dictionary[key[:-4] + 's'] = list(map(
+                    (lambda thing: thing.as_json_dict()),
+                    self.__dict__[key].all()))
+            else:
+                dictionary[key] = self.__dict__[key]
     
     def as_json(self):
         return json.dumps(self.as_json_dict)
@@ -20,7 +26,7 @@ class JSONable:
     def all_as_json(self):
         return json.dumps(self.all_as_json_dicts)
 
-class Post(Model):
+class Post(Model, JSONable):
     uuid = CharField(max_length = 255)
     creation_date = DateTimeField(auto_now_add = True)
     published = BooleanField(default = False)
@@ -31,7 +37,7 @@ class Post(Model):
         except AttributeError:
             return self.textpost
 
-class LinkPost(Post, JSONable):
+class LinkPost(Post):
     title = CharField(max_length = 255)
     url = URLField()
     original_url = URLField()
@@ -42,13 +48,26 @@ class LinkPost(Post, JSONable):
     url_title = TextField()
     url_description = TextField(null = True)
     
-    json_attributes = ['id', 'title', 'published', 'url', 'original_url', 'description', 'provider_name', 'provider_display', 'favicon_url']
+    json_attributes = ['id',
+        'title',
+        'published',
+        'url',
+        'original_url',
+        'description',
+        'provider_name',
+        'provider_display',
+        'favicon_url',
+        'comment_set']
 
-class TextPost(Post, JSONable):
+class TextPost(Post):
     title = CharField(max_length = 255)
     content = TextField()
     
-    json_attributes = ['id', 'title', 'published', 'content']
+    json_attributes = ['id',
+        'title',
+        'published',
+        'content',
+        'comment_set']
 
 class Comment(Model, JSONable):
     parent = ForeignKey('Comment', null = True)
