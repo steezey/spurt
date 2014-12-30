@@ -162,6 +162,7 @@ def post_inbox(request):
         json.dumps(list(map(
             (lambda post: post.content_post().as_json_dict()),
             Post.objects.filter(
+                published = False,
                 uuid = request.GET['uuid'])))))
 
 @csrf_exempt
