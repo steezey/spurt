@@ -148,6 +148,15 @@ def textpost_publish(request):
     return success(id = textpost.id)
 
 @csrf_exempt
+def post_public(request):
+    # GET: (none)
+    
+    return HttpResponse(
+        json.dumps(list(map(
+            (lambda post: post.content_post().as_json_dict()),
+            Post.objects.filter(published = True)))))
+
+@csrf_exempt
 def post_inbox(request):
     # GET: uuid
     
@@ -156,15 +165,6 @@ def post_inbox(request):
             (lambda post: post.content_post().as_json_dict()),
             Post.objects.filter(
                 uuid = request.GET['uuid'])))))
-
-@csrf_exempt
-def post_public(request):
-    # GET: (none)
-    
-    return HttpResponse(
-        json.dumps(list(map(
-            (lambda post: post.content_post().as_json_dict()),
-            Post.objects.filter(published = True)))))
 
 @csrf_exempt
 def comment_create(request):

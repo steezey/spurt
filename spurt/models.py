@@ -37,10 +37,10 @@ class LinkPost(Post, JSONable):
     original_url = URLField()
     description = TextField()
     provider_name = CharField(max_length = 255)
-    provider_display = TextField()
-    favicon_url = URLField()
+    provider_display = TextField(null = True)
+    favicon_url = URLField(null = True)
     url_title = TextField()
-    url_description = TextField()
+    url_description = TextField(null = True)
     
     json_attributes = ['id', 'title', 'published', 'url', 'original_url', 'content', 'description', 'provider_name', 'provider_display', 'favicon_url']
 
