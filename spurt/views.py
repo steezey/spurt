@@ -129,7 +129,7 @@ def textpost_edit(request):
     textpost = get_object_or_404(
         TextPost,
         id = request.POST['id'],
-        uuid = request.POST['description'])
+        uuid = request.POST['uuid'])
     textpost.title = request.POST['title']
     textpost.description = request.POST['description']
     textpost.save()
@@ -142,7 +142,7 @@ def textpost_publish(request):
     textpost = get_object_or_404(
         TextPost,
         id = request.POST['id'],
-        uuid = request.POST['description'])
+        uuid = request.POST['uuid'])
     textpost.published = True
     textpost.save()
     return success(id = textpost.id)
