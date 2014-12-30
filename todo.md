@@ -1,6 +1,6 @@
 
 Will: debug API v2
-Austin: Change frontent API calls
+Austin: Change frontend API calls
     - items/public -> posts/public
     - items/inbox -> posts/inbox
     - items/create -> link-posts/create
