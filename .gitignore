@@ -5,3 +5,4 @@
 !.elasticbeanstalk/*.global.yml
 spurt/local_settings.py
 spurt/local_settings.pyc
+temp.html
