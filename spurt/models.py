@@ -13,6 +13,8 @@ class JSONable:
                     getattr(self, key).all()))
             else:
                 dictionary[key] = self.__dict__[key]
+        
+        return dictionary
     
     def as_json(self):
         return json.dumps(self.as_json_dict)
@@ -75,18 +77,7 @@ class Comment(Model, JSONable):
     uuid = CharField(max_length = 255)
     content = TextField()
     
-    json_attributes = ['uuid', 'content']
+    json_attributes = ['uuid', 'content', 'comment_set']
     
     def children(self):
         return list(Comment.objects.filter(parent = self))
-    
-    def as_json_dict(self):
-        dictionary = {}
-        for attribute in json_attributes:
-            dictionary[attribute] = self.__dict__[attribute]
-        
-        dictionary['children'] = map(
-            (lambda child: child.as_json_dict()),
-            self.children())
-        
-        return dictionary
