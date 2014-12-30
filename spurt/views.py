@@ -1,8 +1,9 @@
 
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 import json
 
-from spurt.models import Item
+from spurt.models import *
 from django.http import HttpResponse
 
 import urllib
@@ -17,7 +18,7 @@ def success(**dictionary):
     dictionary['status'] = 'success'
     return HttpResponse(json.dumps(dictionary))
 
-def failed(**dictionary):
+def failure(**dictionary):
     dictionary['status'] = 'failed'
     return HttpResponse(json.dumps(dictionary))
 
@@ -31,72 +32,153 @@ def embedlify(url):
             urllib.quote(url))\
         .read())
 
+def embedlify_linkpost(linkpost, url):
+    embedly = embedlify(url)
+    for (attribute, name) in [
+            ('url', 'url'),
+            ('original_url', 'original_url'),
+            ('provider_name', 'provider_name'),
+            ('provider_display', 'provider_display'),
+            ('favicon_url', 'favicon_url'),
+            ('url_title', 'title'),
+            ('url_description', 'description')]:
+        linkpost.__dict__[attribute] = embedly[name]
+
+
 @csrf_exempt
-def item_create(request):
+def linkpost_create(request):
     # POST: url, uuid
     
-    item = Item()
-    item.authorUUID = request.POST['uuid']
+    linkpost = LinkPost()
+    linkpost.uuid = request.POST['uuid']
+    embedlify_linkpost(linkpost, request.POST['url'])
+    linkpost.save()
     
-    embedly = embedlify(request.POST['url'])
-    for attribute in [
-            'url', 
-            'original_url', 
-            'provider_name', 
-            'provider_display', 
-            'favicon_url']:
-        item.__dict__[attribute] = embedly[attribute]
-    
-    item.save()
-    
-    return success(id = item.id)
+    return success(id = linkpost.id)
 
 @csrf_exempt
-def item_edit(request):
-    # POST: title, description, id, and authorUUID
+def linkpost_create_and_publish(request):
+    # POST: url, uuid, title, description
     
-    items = list(Item.objects.filter(
+    linkpost = LinkPost()
+    for attribute in ['name', 'title', 'description']:
+        linkpost.__dict__[attribute] = request.POST[attribute]
+    
+    embedlify_linkpost(linkpost, request.POST['url'])
+    linkpost.published = True
+    linkpost.save()
+    
+    return success(id = linkpost.id)
+
+@csrf_exempt
+def linkpost_edit(request):
+    # POST: title, description, id, and uuid
+    
+    linkpost = get_object_or_404(
+        LinkPost,
         id = request.POST['id'],
-        authorUUID = request.POST['uuid']))
-    
-    if len(items) == 0:
-        return failure(message = 
-            'Cannot find item with id "' + request.POST['id'] + \
-            ' and uuid ' + request.POST['uuid'])
-    else:
-        item = items[0]
-        item.title = request.POST['title']
-        item.description = request.POST['description']
-        item.save()
-        return success()
+        uuid = request.POST['uuid'])
+    linkpost.title = request.POST['title']
+    linkpost.description = request.POST['description']
+    linkpost.save()
+    return success()
 
 @csrf_exempt
-def item_publish(request):
-    try:
-        item = Item.objects.get(
-            id = request.POST['id'],
-            authorUUID = request.POST['uuid'])
-        item.title = request.POST['title']
-        item.description = request.POST['description']
-        item.published = True
-        item.save()
-        return success()
-    except DoesNotExist:
-        return failure(message = 
-            'Cannot find item with id "' + request.POST['id'] + \
-            ' and uuid ' + request.POST['uuid'])
+def linkpost_publish(request):
+    # POST: uuid, id
+    
+    linkpost = get_object_or_404(
+        LinkPost,
+        id = request.POST['id'],
+        uuid = request.POST['uuid'])
+    linkpost.title = request.POST['title']
+    linkpost.description = request.POST['description']
+    linkpost.published = True
+    linkpost.save()
+    return success()
 
-def item_inbox(request):
+@csrf_exempt
+def textpost_create(request):
+    # POST: title, description, uuid
+    
+    textpost = TextPost()
+    for attribute in ['title', 'description', 'uuid']:
+        textpost.__dict__[attribute] = request.POST[attribute]
+    
+    textpost.save()
+    
+    return success(id = textpost.id)
+
+@csrf_exempt
+def textpost_create_and_publish(request):
+    # POST: title, description, uuid
+    
+    textpost = TextPost()
+    for attribute in ['title', 'description', 'uuid']:
+        textpost.__dict__[attribute] = request.POST[attribute]
+    
+    textpost.published = True
+    textpost.save()
+    
+    return success(id = textpost.id)
+
+@csrf_exempt
+def textpost_edit(request):
+    # POST: title, description, id, and uuid
+    
+    textpost = get_object_or_404(
+        TextPost,
+        id = request.POST['id'],
+        uuid = request.POST['description'])
+    textpost.title = request.POST['title']
+    textpost.description = request.POST['description']
+    textpost.save()
+    return success(id = textpost.id)
+
+@csrf_exempt
+def textpost_publish(request):
+    # POST: uuid, id
+    
+    textpost = get_object_or_404(
+        TextPost,
+        id = request.POST['id'],
+        uuid = request.POST['description'])
+    textpost.published = True
+    textpost.save()
+    return success(id = textpost.id)
+
+@csrf_exempt
+def post_inbox(request):
     # GET: uuid
     
     return HttpResponse(
         json.dumps(list(map(
-            (lambda item: item.as_json_dict()),
-            Item.objects.filter(
-                authorUUID = request.GET['uuid'])))))
+            (lambda post: post.content_post().as_json_dict()),
+            Post.objects.filter(
+                uuid = request.GET['uuid'])))))
 
-def item_public(request):
+@csrf_exempt
+def post_public(request):
+    # GET: (none)
+    
     return HttpResponse(
         json.dumps(list(map(
-            (lambda item: item.as_json_dict()),
-            Item.objects.filter(published = True)))))
+            (lambda post: post.content_post().as_json_dict()),
+            Post.objects.filter(published = True)))))
+
+@csrf_exempt
+def comment_create(request):
+    # POST: post_id, uuid, content, (optional) parent_id
+    
+    comment = Comment(
+        post = get_object_or_404(Post, id = request.POST['post_id']),
+        uuid = request.POST['uuid'],
+        content = request.POST['content'])
+    if request.POST.has_key('parent_id'):
+        comment.parent = get_object_or_404(
+            Comment,
+            id = request.POST['parent_id'])
+    
+    comment.save()
+    
+    return success(id = comment.id)

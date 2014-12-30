@@ -20,17 +20,54 @@ class JSONable:
     def all_as_json(self):
         return json.dumps(self.all_as_json_dicts)
 
-class Item(Model, JSONable):
-    title = CharField(max_length = 255)
-    authorUUID = CharField(max_length = 255)
+class Post(Model):
+    uuid = CharField(max_length = 255)
     creation_date = DateTimeField(auto_now_add = True)
     published = BooleanField(default = False)
+    
+    def content_post(self):
+        try:
+            return self.linkpost
+        except AttributeError:
+            return self.textpost
+
+class LinkPost(Post, JSONable):
+    title = CharField(max_length = 255)
     url = URLField()
     original_url = URLField()
-    content = TextField()
     description = TextField()
     provider_name = CharField(max_length = 255)
     provider_display = TextField()
     favicon_url = URLField()
+    url_title = TextField()
+    url_description = TextField()
     
     json_attributes = ['id', 'title', 'published', 'url', 'original_url', 'content', 'description', 'provider_name', 'provider_display', 'favicon_url']
+
+class TextPost(Post, JSONable):
+    title = CharField(max_length = 255)
+    content = TextField()
+    
+    json_attributes = ['id', 'title', 'published', 'content']
+
+class Comment(Model, JSONable):
+    parent = ForeignKey('Comment')
+    post = ForeignKey(Post)
+    uuid = CharField(max_length = 255)
+    content = TextField()
+    
+    json_attributes = ['uuid', 'content']
+    
+    def children(self):
+        return list(Comment.objects.filter(parent = self))
+    
+    def as_json_dict(self):
+        dictionary = {}
+        for attribute in json_attributes:
+            dictionary[attribute] = self.__dict__[attribute]
+        
+        dictionary['children'] = map(
+            (lambda child: child.as_json_dict()),
+            self.children())
+        
+        return dictionary
