@@ -42,7 +42,7 @@ class LinkPost(Post, JSONable):
     url_title = TextField()
     url_description = TextField(null = True)
     
-    json_attributes = ['id', 'title', 'published', 'url', 'original_url', 'content', 'description', 'provider_name', 'provider_display', 'favicon_url']
+    json_attributes = ['id', 'title', 'published', 'url', 'original_url', 'description', 'provider_name', 'provider_display', 'favicon_url']
 
 class TextPost(Post, JSONable):
     title = CharField(max_length = 255)
