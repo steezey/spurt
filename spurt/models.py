@@ -1,7 +1,8 @@
 
-from django.db.models import Model, BooleanField, NullBooleanField, CommaSeparatedIntegerField, EmailField, IPAddressField, GenericIPAddressField, URLField, FileField, ImageField, CharField, TextField, DateField, DateTimeField, TimeField, BigIntegerField, DecimalField, FloatField, IntegerField, PositiveIntegerField, PositiveSmallIntegerField, SmallIntegerField, ForeignKey, ManyToManyField, OneToOneField
-
 import json
+import datetime
+
+from django.db.models import Model, BooleanField, NullBooleanField, CommaSeparatedIntegerField, EmailField, IPAddressField, GenericIPAddressField, URLField, FileField, ImageField, CharField, TextField, DateField, DateTimeField, TimeField, BigIntegerField, DecimalField, FloatField, IntegerField, PositiveIntegerField, PositiveSmallIntegerField, SmallIntegerField, ForeignKey, ManyToManyField, OneToOneField
 
 class JSONable:
     def as_json_dict(self):
@@ -31,6 +32,7 @@ class JSONable:
 class Post(Model, JSONable):
     uuid = CharField(max_length = 255)
     creation_date = DateTimeField(auto_now_add = True)
+    published_date = DateTimeField(null = True)
     published = BooleanField(default = False)
     
     def content_post(self):
@@ -38,6 +40,11 @@ class Post(Model, JSONable):
             return self.linkpost
         except AttributeError:
             return self.textpost
+    
+    def publish(self):
+        self.published = True
+        self.published_date = datetime.datetime.now()
+        self.save()
 
 class LinkPost(Post):
     title = CharField(max_length = 255)
@@ -59,7 +66,9 @@ class LinkPost(Post):
         'provider_name',
         'provider_display',
         'favicon_url',
-        'comment_set']
+        'comment_set',
+        'url_title',
+        'url_description']
 
 class TextPost(Post):
     title = CharField(max_length = 255)
