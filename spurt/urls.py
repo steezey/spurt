@@ -5,18 +5,18 @@ from spurt import views
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    # Create link post. POST: url, uuid
-    url(r'^link-posts/create', views.linkpost_create),
     # Create link post and publish. POST: url, uuid, title, description
     url(r'^link-posts/create-and-publish', views.linkpost_create_and_publish),
+    # Create link post. POST: url, uuid
+    url(r'^link-posts/create', views.linkpost_create),
     # Edit link post. POST: title, description, id, and uuid
     url(r'^link-posts/edit', views.linkpost_edit),
     # Publish link post. POST: uuid, id
     url(r'^link-posts/publish', views.linkpost_publish),
-    # Create text post. POST: title, description, uuid
-    url(r'^text-posts/create', views.textpost_create),
     # Create text post and publish. POST: title, description, uuid
     url(r'^text-posts/create-and-publish', views.textpost_create_and_publish),
+    # Create text post. POST: title, description, uuid
+    url(r'^text-posts/create', views.textpost_create),
     # Edit text post. POST: title, description, id, and uuid
     url(r'^text-posts/edit', views.textpost_edit),
     # Publish text post. POST: uuid, id
