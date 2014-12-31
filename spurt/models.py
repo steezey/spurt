@@ -65,7 +65,9 @@ class LinkPost(Post):
         'provider_name',
         'provider_display',
         'favicon_url',
-        'comment_set']
+        'comment_set',
+        'url_title',
+        'url_description']
 
 class TextPost(Post):
     title = CharField(max_length = 255)
