@@ -31,6 +31,7 @@ class JSONable:
 class Post(Model, JSONable):
     uuid = CharField(max_length = 255)
     creation_date = DateTimeField(auto_now_add = True)
+    published_date = DateTimeField(null = True)
     published = BooleanField(default = False)
     
     def content_post(self):
@@ -38,6 +39,11 @@ class Post(Model, JSONable):
             return self.linkpost
         except AttributeError:
             return self.textpost
+    
+    def publish(self):
+        self.published = True
+        self.published_date = datetime.datetime.now()
+        self.save()
 
 class LinkPost(Post):
     title = CharField(max_length = 255)

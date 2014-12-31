@@ -65,7 +65,7 @@ def linkpost_create_and_publish(request):
         linkpost.__dict__[attribute] = request.POST[attribute]
     
     embedlify_linkpost(linkpost, request.POST['url'])
-    linkpost.published = True
+    linkpost.publish()
     linkpost.save()
     
     return success(id = linkpost.id)
@@ -91,7 +91,7 @@ def linkpost_publish(request):
         LinkPost,
         id = request.POST['id'],
         uuid = request.POST['uuid'])
-    linkpost.published = True
+    linkpost.publish()
     linkpost.save()
     return success()
 
@@ -115,7 +115,7 @@ def textpost_create_and_publish(request):
     for attribute in ['title', 'description', 'uuid']:
         textpost.__dict__[attribute] = request.POST[attribute]
     
-    textpost.published = True
+    textpost.publish()
     textpost.save()
     
     return success(id = textpost.id)
@@ -141,7 +141,7 @@ def textpost_publish(request):
         TextPost,
         id = request.POST['id'],
         uuid = request.POST['uuid'])
-    textpost.published = True
+    textpost.publish()
     textpost.save()
     return success(id = textpost.id)
 
@@ -152,7 +152,9 @@ def post_public(request):
     return HttpResponse(
         json.dumps(list(map(
             (lambda post: post.content_post().as_json_dict()),
-            Post.objects.filter(published = True)))))
+            Post.objects\
+                .order_by('-published_date')\
+                .filter(published = True)))))
 
 @csrf_exempt
 def post_inbox(request):
@@ -161,7 +163,7 @@ def post_inbox(request):
     return HttpResponse(
         json.dumps(list(map(
             (lambda post: post.content_post().as_json_dict()),
-            Post.objects.filter(
+            Post.objects.order_by('-published_date').filter(
                 published = False,
                 uuid = request.GET['uuid'])))))
 
