@@ -61,7 +61,7 @@ def linkpost_create_and_publish(request):
     # POST: url, uuid, title, description
     
     linkpost = LinkPost()
-    for attribute in ['name', 'title', 'description']:
+    for attribute in ['uuid', 'title', 'description']:
         linkpost.__dict__[attribute] = request.POST[attribute]
     
     embedlify_linkpost(linkpost, request.POST['url'])
