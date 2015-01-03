@@ -1,6 +1,7 @@
 
 import json
 import datetime
+import re
 
 from django.db.models import Model, BooleanField, NullBooleanField, CommaSeparatedIntegerField, EmailField, IPAddressField, GenericIPAddressField, URLField, FileField, ImageField, CharField, TextField, DateField, DateTimeField, TimeField, BigIntegerField, DecimalField, FloatField, IntegerField, PositiveIntegerField, PositiveSmallIntegerField, SmallIntegerField, ForeignKey, ManyToManyField, OneToOneField
 
@@ -29,6 +30,10 @@ class JSONable:
     def all_as_json(self):
         return json.dumps(self.all_as_json_dicts)
 
+class EmbedlyResponse(Model):
+    url = URLField()
+    response = TextField()
+
 class Post(Model, JSONable):
     uuid = CharField(max_length = 255)
     creation_date = DateTimeField(auto_now_add = True)
@@ -56,6 +61,17 @@ class LinkPost(Post):
     favicon_url = URLField(null = True)
     url_title = TextField()
     url_description = TextField(null = True)
+    url_published = TextField(null = True)
+    url_content = TextField(null = True)
+    url_content_filtered = TextField(null = True)
+    kind = CharField(max_length = 255, default = 'link')
+    
+    def filter_url_content(self):
+        if self.url_content != None:
+            self.url_content_filtered = \
+                re.compile('<.*?>').sub('', 
+                    re.compile('< *p [^>]+>(.+)</ *p *>').sub('\\n\1\\n',
+                        self.url_content))
     
     json_attributes = ['id',
         'title',
@@ -68,17 +84,21 @@ class LinkPost(Post):
         'favicon_url',
         'comment_set',
         'url_title',
-        'url_description']
+        'url_description',
+        'url_published',
+        'kind']
 
 class TextPost(Post):
     title = CharField(max_length = 255)
     content = TextField()
+    kind = CharField(max_length = 255, default = 'text')
     
     json_attributes = ['id',
         'title',
         'published',
         'content',
-        'comment_set']
+        'comment_set',
+        'kind']
 
 class Comment(Model, JSONable):
     parent = ForeignKey('Comment', null = True)

@@ -1,12 +1,13 @@
 
+import json
+import urllib
+
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
-import json
+from django.core.exceptions import ObjectDoesNotExist
 
 from spurt.models import *
-from django.http import HttpResponse
-
-import urllib
 
 # python 3.4:
 # from urllib import request
@@ -25,12 +26,19 @@ def failure(**dictionary):
 embedly_key = '2349d9cd48b64d988389fb4af2792a45'
 
 def embedlify(url):
-    return json.loads(request.urlopen(
-            'http://api.embed.ly/1/extract?key=' + 
-            embedly_key + 
-            '&url=' + 
-            urllib.quote(url))\
-        .read())
+    try:
+        return EmbedlyResponse.objects.get(url = url)
+    except ObjectDoesNotExist:
+        response = request.urlopen(
+                'http://api.embed.ly/1/extract?key=' +
+                embedly_key +
+                '&url=' +
+                urllib.quote(url))\
+            .read()
+        
+        EmbedlyResponse(url = url, response = response).save()
+        
+        return json.loads(response)
 
 def embedlify_linkpost(linkpost, url):
     embedly = embedlify(url)
@@ -41,8 +49,12 @@ def embedlify_linkpost(linkpost, url):
             ('provider_display', 'provider_display'),
             ('favicon_url', 'favicon_url'),
             ('url_title', 'title'),
-            ('url_description', 'description')]:
+            ('url_description', 'description'),
+            ('url_published', 'published'),
+            ('url_content', 'content')]:
         linkpost.__dict__[attribute] = embedly[name]
+    
+    linkpost.filter_url_content()
 
 
 @csrf_exempt
@@ -85,12 +97,15 @@ def linkpost_edit(request):
 
 @csrf_exempt
 def linkpost_publish(request):
-    # POST: uuid, id
+    # POST: uuid, id, (optional) title, (optional) description
     
     linkpost = get_object_or_404(
         LinkPost,
         id = request.POST['id'],
         uuid = request.POST['uuid'])
+    for attribute in ['title', 'description']:
+        linkpost.__dict__[attribute] = \
+            request.POST.get(attribute, linkpost.__dict__[attribute])
     linkpost.publish()
     linkpost.save()
     return success()
@@ -100,7 +115,7 @@ def textpost_create(request):
     # POST: title, description, uuid
     
     textpost = TextPost()
-    for attribute in ['title', 'description', 'uuid']:
+    for attribute in ['title', 'content', 'uuid']:
         textpost.__dict__[attribute] = request.POST[attribute]
     
     textpost.save()
@@ -112,7 +127,7 @@ def textpost_create_and_publish(request):
     # POST: title, description, uuid
     
     textpost = TextPost()
-    for attribute in ['title', 'description', 'uuid']:
+    for attribute in ['title', 'content', 'uuid']:
         textpost.__dict__[attribute] = request.POST[attribute]
     
     textpost.publish()
@@ -122,25 +137,27 @@ def textpost_create_and_publish(request):
 
 @csrf_exempt
 def textpost_edit(request):
-    # POST: title, description, id, and uuid
+    # POST: title, content, id, and uuid
     
     textpost = get_object_or_404(
         TextPost,
         id = request.POST['id'],
         uuid = request.POST['uuid'])
     textpost.title = request.POST['title']
-    textpost.description = request.POST['description']
+    textpost.content = request.POST['content']
     textpost.save()
     return success(id = textpost.id)
 
 @csrf_exempt
 def textpost_publish(request):
-    # POST: uuid, id
+    # POST: uuid, id, (optional) title, (optional) content
     
     textpost = get_object_or_404(
         TextPost,
         id = request.POST['id'],
         uuid = request.POST['uuid'])
+    textpost.title = request.POST.get('title', textpost.title)
+    textpost.content = request.POST.get('content', textpost.content)
     textpost.publish()
     textpost.save()
     return success(id = textpost.id)
@@ -163,7 +180,7 @@ def post_inbox(request):
     return HttpResponse(
         json.dumps(list(map(
             (lambda post: post.content_post().as_json_dict()),
-            Post.objects.order_by('-published_date').filter(
+            Post.objects.order_by('-creation_date').filter(
                 published = False,
                 uuid = request.GET['uuid'])))))
 
