@@ -27,7 +27,7 @@ embedly_key = '2349d9cd48b64d988389fb4af2792a45'
 
 def embedlify(url):
     try:
-        return json.loads(EmbedlyResponse.objects.get(url = url))
+        return json.loads(EmbedlyResponse.objects.get(url = url).response)
     except ObjectDoesNotExist:
         response = request.urlopen(
                 'http://api.embed.ly/1/extract?key=' +
