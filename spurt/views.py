@@ -27,7 +27,7 @@ embedly_key = '2349d9cd48b64d988389fb4af2792a45'
 
 def embedlify(url):
     try:
-        return EmbedlyResponse.objects.get(url = url)
+        return json.loads(EmbedlyResponse.objects.get(url = url))
     except ObjectDoesNotExist:
         response = request.urlopen(
                 'http://api.embed.ly/1/extract?key=' +
@@ -52,7 +52,7 @@ def embedlify_linkpost(linkpost, url):
             ('url_description', 'description'),
             ('url_published', 'published'),
             ('url_content', 'content')]:
-        linkpost.__dict__[attribute] = embedly.__dict__[name]
+        linkpost.__dict__[attribute] = embedly[name]
     
     linkpost.filter_url_content()
 
