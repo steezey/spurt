@@ -5,6 +5,7 @@ Bugs:
 -------- Text posts content is always empty. description is not saving (this is because the database field name is "content")
 
 Requests:
+- Output url_content_filtered in both the public and inbox routes
 -------- Differentiation field for posts to distinguish text from link posts (type?) in the public output
 ---- text-post & link-post /publish accept title and description so you edit the post and publish it at the same time
 -------- Link posts include the published parameter from embedly and output this
