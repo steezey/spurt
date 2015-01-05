@@ -86,6 +86,8 @@ class LinkPost(Post):
         'url_title',
         'url_description',
         'url_published',
+        'url_content',
+        'url_content_filtered',
         'kind']
 
 class TextPost(Post):
