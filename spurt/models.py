@@ -68,6 +68,11 @@ class LinkPost(Post):
     media = TextField(null = True)
     kind = CharField(max_length = 255, default = 'link')
     
+    def as_json_dict(self):
+        dictionary = Post.as_json_dict(self)
+        dictionary['media'] = json.loads(dictionary['media'])
+        return dictionary
+    
     def filter_url_content(self):
         if self.url_content != None:
             self.url_content_filtered = \
