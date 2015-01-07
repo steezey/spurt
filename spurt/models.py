@@ -70,7 +70,10 @@ class LinkPost(Post):
     
     def as_json_dict(self):
         dictionary = Post.as_json_dict(self)
-        dictionary['media'] = json.loads(dictionary['media'])
+        
+        if dictionary['media'] != None:
+            dictionary['media'] = json.loads(dictionary['media'])
+        
         return dictionary
     
     def filter_url_content(self):
