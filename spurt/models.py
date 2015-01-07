@@ -69,7 +69,7 @@ class LinkPost(Post):
     def filter_url_content(self):
         if self.url_content != None:
             self.url_content_filtered = \
-                re.compile('<.*?>').sub('', 
+                re.compile('<(?!/?img).*?>').sub('', 
                     re.compile('< *p [^>]+>(.+)</ *p *>').sub('\\n\1\\n',
                         self.url_content))
     
@@ -108,7 +108,11 @@ class Comment(Model, JSONable):
     uuid = CharField(max_length = 255)
     content = TextField()
     
-    json_attributes = ['uuid', 'content', 'comment_set']
+    json_attributes = [
+        'id',
+        'uuid',
+        'content',
+        'comment_set']
     
     def children(self):
         return list(Comment.objects.filter(parent = self))
