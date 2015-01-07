@@ -64,6 +64,7 @@ class LinkPost(Post):
     url_published = TextField(null = True)
     url_content = TextField(null = True)
     url_content_filtered = TextField(null = True)
+    url_author = TextField(null = True)
     kind = CharField(max_length = 255, default = 'link')
     
     def filter_url_content(self):
@@ -88,6 +89,7 @@ class LinkPost(Post):
         'url_published',
         'url_content',
         'url_content_filtered',
+        'url_author',
         'kind']
 
 class TextPost(Post):

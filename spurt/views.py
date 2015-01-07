@@ -54,6 +54,11 @@ def embedlify_linkpost(linkpost, url):
             ('url_content', 'content')]:
         linkpost.__dict__[attribute] = embedly[name]
     
+    try:
+        linkpost.url_author = embedly['authors'][0]
+    except IndexError:
+        pass
+    
     linkpost.filter_url_content()
 
 
