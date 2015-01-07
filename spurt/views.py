@@ -55,6 +55,9 @@ def embedlify_linkpost(linkpost, url):
     
     linkpost.original_url = url
     
+    if embedly.has_key('media'):
+        linkpost.media = json.dumps(embedly['media'])
+    
     if linkpost.url is None:
         linkpost.url = url
     
