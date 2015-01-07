@@ -31,7 +31,7 @@ class JSONable:
         return json.dumps(self.all_as_json_dicts)
 
 class EmbedlyResponse(Model):
-    url = URLField()
+    url = TextField()
     response = TextField()
 
 class Post(Model, JSONable):
@@ -53,12 +53,12 @@ class Post(Model, JSONable):
 
 class LinkPost(Post):
     title = CharField(max_length = 255)
-    url = URLField()
-    original_url = URLField()
+    url = TextField()
+    original_url = TextField()
     description = TextField()
     provider_name = CharField(max_length = 255)
     provider_display = TextField(null = True)
-    favicon_url = URLField(null = True)
+    favicon_url = TextField(null = True)
     url_title = TextField()
     url_description = TextField(null = True)
     url_published = TextField(null = True)
