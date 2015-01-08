@@ -31,7 +31,7 @@ class JSONable:
         return json.dumps(self.all_as_json_dicts)
 
 class EmbedlyResponse(Model):
-    url = URLField()
+    url = TextField()
     response = TextField()
 
 class Post(Model, JSONable):
@@ -53,19 +53,28 @@ class Post(Model, JSONable):
 
 class LinkPost(Post):
     title = CharField(max_length = 255)
-    url = URLField()
-    original_url = URLField()
+    url = TextField()
+    original_url = TextField()
     description = TextField()
-    provider_name = CharField(max_length = 255)
+    provider_name = CharField(max_length = 255, null = True)
     provider_display = TextField(null = True)
-    favicon_url = URLField(null = True)
-    url_title = TextField()
+    favicon_url = TextField(null = True)
+    url_title = TextField(null = True)
     url_description = TextField(null = True)
     url_published = TextField(null = True)
     url_content = TextField(null = True)
     url_content_filtered = TextField(null = True)
     url_author = TextField(null = True)
+    media = TextField(null = True)
     kind = CharField(max_length = 255, default = 'link')
+    
+    def as_json_dict(self):
+        dictionary = Post.as_json_dict(self)
+        
+        if dictionary['media'] != None:
+            dictionary['media'] = json.loads(dictionary['media'])
+        
+        return dictionary
     
     def filter_url_content(self):
         if self.url_content != None:
@@ -90,6 +99,7 @@ class LinkPost(Post):
         'url_content',
         'url_content_filtered',
         'url_author',
+        'media',
         'kind']
 
 class TextPost(Post):

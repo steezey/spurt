@@ -44,7 +44,6 @@ def embedlify_linkpost(linkpost, url):
     embedly = embedlify(url)
     for (attribute, name) in [
             ('url', 'url'),
-            ('original_url', 'original_url'),
             ('provider_name', 'provider_name'),
             ('provider_display', 'provider_display'),
             ('favicon_url', 'favicon_url'),
@@ -53,6 +52,14 @@ def embedlify_linkpost(linkpost, url):
             ('url_published', 'published'),
             ('url_content', 'content')]:
         linkpost.__dict__[attribute] = embedly[name]
+    
+    linkpost.original_url = url
+    
+    if embedly.has_key('media'):
+        linkpost.media = json.dumps(embedly['media'])
+    
+    if linkpost.url is None:
+        linkpost.url = url
     
     try:
         linkpost.url_author = embedly['authors'][0]
