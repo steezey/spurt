@@ -34,4 +34,6 @@ app.get('/', (req, res) ->
             sources.readability = obj
             filterJoin()))
 
-app.listen(8004)
+port = process.env.PORT || 8004
+console.log("Start app on port #{port}.")
+app.listen(port)
