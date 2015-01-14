@@ -1,5 +1,7 @@
 
-exports.isProd = require('os').hostname() isnt '4.local'
+os = require('os')
+
+exports.isProd = os.hostname() isnt '4.local' and os.hostname() isnt '4-6.local'
 
 if exports.isProd
     console.log('Running in PROD')

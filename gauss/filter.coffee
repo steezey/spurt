@@ -16,7 +16,7 @@ module.exports = (e, r) ->
 
         rddme_url: r.short_url
 
-        author_name: r.author or e.authors[0].name
+        author_name: r.author or (e.authors[0] ? {}).name
 
         author: e.author or {name: r.author}
 
@@ -44,7 +44,7 @@ module.exports = (e, r) ->
 
     ###    
     
-    if e.media isnt undefined
+    if e.media isnt undefined and e.media.type isnt undefined
         if e.media.type is 'photo'
             scraped.content = "<img src='#{e.media.url}>"
         else
@@ -55,13 +55,12 @@ module.exports = (e, r) ->
         if scraped.content?
             TAGS_TO_SCRAPE = 'p img h1 h2 h3 h4 h5 h6'.split(' ')
             
-            $('body').html(content)
+            $('body').html(scraped.content)
             tags = $(TAGS_TO_SCRAPE.join(', '))
             
-            scraped.content_filtered = _.join(
-                _.pluck(
-                    _.toArray(tags),
-                    'outerHTML'),
-                '')
+            scraped.content_filtered = _.chain(tags)
+                    .pluck('outerHTML')
+                    .value()
+                    .join('')
     
     return scraped
