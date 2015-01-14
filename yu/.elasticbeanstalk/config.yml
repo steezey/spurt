@@ -1,9 +1,0 @@
-branch-defaults:
-  default:
-    environment: yu-dev
-global:
-  application_name: yu
-  default_ec2_keyname: null
-  default_platform: Node.js
-  default_region: us-west-1
-  profile: eb-cli
