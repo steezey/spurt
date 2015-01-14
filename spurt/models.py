@@ -71,9 +71,6 @@ class LinkPost(Post):
     def as_json_dict(self):
         dictionary = Post.as_json_dict(self)
         
-        if dictionary['media'] != None:
-            dictionary['media'] = json.loads(dictionary['media'])
-        
         return dictionary
     
     json_attributes = ['id',
