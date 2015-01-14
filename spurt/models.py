@@ -1,10 +1,13 @@
 
-import json
-import urllib2
 import datetime
+import json
 import re
+import urlparse
+import urllib2
 
 from django.db.models import Model, BooleanField, NullBooleanField, CommaSeparatedIntegerField, EmailField, IPAddressField, GenericIPAddressField, URLField, FileField, ImageField, CharField, TextField, DateField, DateTimeField, TimeField, BigIntegerField, DecimalField, FloatField, IntegerField, PositiveIntegerField, PositiveSmallIntegerField, SmallIntegerField, ForeignKey, ManyToManyField, OneToOneField
+
+class InvalidURL(Exception): pass
 
 class JSONable:
     def as_json_dict(self):
@@ -61,7 +64,7 @@ class LinkPost(Post):
     domain = TextField(null = True)
     rddme_url = TextField(null = True)
     author_name = TextField(null = True)
-    author = TextField(null = True)
+    authors = TextField(null = True)
     dek = TextField(null = True)
     lead = TextField(null = True)
     lead_image = TextField(null = True)
@@ -97,17 +100,25 @@ class LinkPost(Post):
         'kind']
     
     def scrape(self, url):
+        url = urlparse.urlparse(url)
+        
+        if url.netloc is '':
+            raise InvalidURL("URL netloc is ''")
+        
+        url = urlparse.ParseResult(
+            scheme = url.scheme or 'http',
+            netloc = url.netloc,
+            path = url.path,
+            params = url.params,
+            query = url.query,
+            fragment = url.fragment)
+        
         gauss_url = \
             'http://gauss.elasticbeanstalk.com/' + \
             '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
-            '&url=' + url
-        
-        print('HERE')
-        print(gauss_url)
+            '&url=' + url.geturl()
         
         scraped = json.loads(urllib2.urlopen(gauss_url).read())
-        
-        print('THERE')
         
         for attribute in scraped.keys():
             self.__dict__[attribute] = scraped[attribute]

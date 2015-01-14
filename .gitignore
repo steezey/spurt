@@ -6,4 +6,5 @@
 spurt/local_settings.py
 spurt/local_settings.pyc
 temp.html
+temp.json
 *.pyc

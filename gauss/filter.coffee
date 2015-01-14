@@ -2,7 +2,7 @@
 _ = require('customscore')
 $ = require('jquery')(require('jsdom').jsdom().parentWindow)
 
-module.exports = (e, r) ->
+module.exports = (e, r, html) ->
     # For docs, see scraping-methodology.md.
     
     scraped = 
@@ -18,7 +18,8 @@ module.exports = (e, r) ->
 
         author_name: r.author or (e.authors[0] ? {}).name
 
-        author: e.author or {name: r.author}
+        authors: JSON.stringify(
+            if 0 < e.authors.length then e.authors else if r.author then [{name: r.author}] else [])
 
         dek: e.description or r.dek
 
@@ -51,7 +52,7 @@ module.exports = (e, r) ->
             scraped.content = e.media.html
         scraped.content_filtered = scraped.content
     else
-        scraped.content = r.content or e.content
+        scraped.content = r.content or e.content or html
         if scraped.content?
             TAGS_TO_SCRAPE = 'p img h1 h2 h3 h4 h5 h6'.split(' ')
             

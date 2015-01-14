@@ -20,12 +20,15 @@ def failure(**dictionary):
 def linkpost_create(request):
     # POST: url, uuid
     
-    linkpost = LinkPost()
-    linkpost.uuid = request.POST['uuid']
-    linkpost.scrape(request.POST['url'])
-    linkpost.save()
-    
-    return success(id = linkpost.id)
+    try:
+        linkpost = LinkPost()
+        linkpost.uuid = request.POST['uuid']
+        linkpost.scrape(request.POST['url'])
+        linkpost.save()
+        
+        return success(id = linkpost.id)
+    except InvalidURL:
+        return failure(message = 'Invalid URL', url = request.POST['url'])
 
 @csrf_exempt
 def linkpost_create_and_publish(request):
@@ -35,11 +38,14 @@ def linkpost_create_and_publish(request):
     for attribute in ['uuid', 'title', 'description']:
         linkpost.__dict__[attribute] = request.POST[attribute]
     
-    linkpost.scrape(request.POST['url'])
-    linkpost.publish()
-    linkpost.save()
-    
-    return success(id = linkpost.id)
+    try:
+        linkpost.scrape(request.POST['url'])
+        linkpost.publish()
+        linkpost.save()
+        
+        return success(id = linkpost.id)
+    except InvalidURL:
+        return failure(message = 'Invalid URL', url = request.POST['url'])
 
 @csrf_exempt
 def linkpost_edit(request):

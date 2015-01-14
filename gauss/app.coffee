@@ -1,5 +1,6 @@
 
 app = require('express')()
+request = require('request')
 
 env = require('./env.coffee')
 filter = require('./filter.coffee')
@@ -16,11 +17,12 @@ app.get('/', (req, res) ->
         console.log('ERROR: Bad key.')
         res.end('ERROR: Bad key.')
     else
-        filterJoin = createJoin(2, ->
+        joinFilter = createJoin(3, ->
             console.log('Received sources.')
             res.end(JSON.stringify(filter(
                 sources.embedly,
-                sources.readability)))
+                sources.readability,
+                sources.page)))
             console.log('Responded.'))
         
         sources = {}
@@ -28,11 +30,17 @@ app.get('/', (req, res) ->
         
         embedly(url, (obj) -> 
             sources.embedly = obj
-            filterJoin())
+            joinFilter())
         
         readability(url, (obj) ->
             sources.readability = obj
-            filterJoin()))
+            joinFilter())
+        
+        request(url, (error, res, body) ->
+            console.log(error, res)
+            console.log(body[0...100])
+            sources.page = body
+            joinFilter()))
 
 port = process.env.PORT || 8004
 console.log("Start app on port #{port}.")
