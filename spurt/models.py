@@ -91,14 +91,7 @@ class LinkPost(Post):
         'scraped_author',
         'kind']
     
-    def filter_url_content(self):
-        if self.url_content != None:
-            self.url_content_filtered = \
-                re.compile('<(?!/?img).*?>').sub('', 
-                    re.compile('< *p [^>]+>(.+)</ *p *>').sub('\\n\1\\n',
-                        self.url_content))
-    
-    def scrape(url):
+    def scrape(self, url):
         gauss_url = \
             'http://gauss.elasticbeanstalk.com/' + \
             '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
