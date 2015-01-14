@@ -1,5 +1,6 @@
 
 import json
+import urllib2
 import datetime
 import re
 
@@ -59,13 +60,12 @@ class LinkPost(Post):
     provider_name = CharField(max_length = 255, null = True)
     provider_display = TextField(null = True)
     favicon_url = TextField(null = True)
-    url_title = TextField(null = True)
-    url_description = TextField(null = True)
-    url_published = TextField(null = True)
-    url_content = TextField(null = True)
-    url_content_filtered = TextField(null = True)
-    url_author = TextField(null = True)
-    media = TextField(null = True)
+    scraped_title = TextField(null = True)
+    scraped_description = TextField(null = True)
+    scraped_published = TextField(null = True)
+    scraped_content = TextField(null = True)
+    scraped_content_filtered = TextField(null = True)
+    scraped_author = TextField(null = True)
     kind = CharField(max_length = 255, default = 'link')
     
     def as_json_dict(self):
@@ -75,13 +75,6 @@ class LinkPost(Post):
             dictionary['media'] = json.loads(dictionary['media'])
         
         return dictionary
-    
-    def filter_url_content(self):
-        if self.url_content != None:
-            self.url_content_filtered = \
-                re.compile('<(?!/?img).*?>').sub('', 
-                    re.compile('< *p [^>]+>(.+)</ *p *>').sub('\\n\1\\n',
-                        self.url_content))
     
     json_attributes = ['id',
         'title',
@@ -93,14 +86,33 @@ class LinkPost(Post):
         'provider_display',
         'favicon_url',
         'comment_set',
-        'url_title',
-        'url_description',
-        'url_published',
-        'url_content',
-        'url_content_filtered',
-        'url_author',
-        'media',
+        'scraped_title',
+        'scraped_description',
+        'scraped_published',
+        'scraped_content',
+        'scraped_content_filtered',
+        'scraped_author',
         'kind']
+    
+    def filter_url_content(self):
+        if self.url_content != None:
+            self.url_content_filtered = \
+                re.compile('<(?!/?img).*?>').sub('', 
+                    re.compile('< *p [^>]+>(.+)</ *p *>').sub('\\n\1\\n',
+                        self.url_content))
+    
+    def scrape(url):
+        gauss_url = \
+            'http://gauss.elasticbeanstalk.com/' + \
+            '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
+            '&url=' + url
+        
+        scraped = json.loads(urllib2.urlopen(gauss_url).read())
+        
+        for attribute in scraped.keys():
+            self.__dict__['scraped_' + attribute] = scraped[attribute]
+        
+        self.save()
 
 class TextPost(Post):
     title = CharField(max_length = 255)

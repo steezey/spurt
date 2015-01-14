@@ -1,6 +1,5 @@
 
 import json
-import urllib
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -8,12 +7,6 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
 from spurt.models import *
-
-# python 3.4:
-# from urllib import request
-
-# python 2.7:
-request = urllib
 
 def success(**dictionary):
     dictionary['status'] = 'success'
@@ -23,59 +16,13 @@ def failure(**dictionary):
     dictionary['status'] = 'failed'
     return HttpResponse(json.dumps(dictionary))
 
-embedly_key = '2349d9cd48b64d988389fb4af2792a45'
-
-def embedlify(url):
-    try:
-        return json.loads(EmbedlyResponse.objects.get(url = url).response)
-    except ObjectDoesNotExist:
-        response = request.urlopen(
-                'http://api.embed.ly/1/extract?key=' +
-                embedly_key +
-                '&url=' +
-                urllib.quote(url))\
-            .read()
-        
-        EmbedlyResponse(url = url, response = response).save()
-        
-        return json.loads(response)
-
-def embedlify_linkpost(linkpost, url):
-    embedly = embedlify(url)
-    for (attribute, name) in [
-            ('url', 'url'),
-            ('provider_name', 'provider_name'),
-            ('provider_display', 'provider_display'),
-            ('favicon_url', 'favicon_url'),
-            ('url_title', 'title'),
-            ('url_description', 'description'),
-            ('url_published', 'published'),
-            ('url_content', 'content')]:
-        linkpost.__dict__[attribute] = embedly[name]
-    
-    linkpost.original_url = url
-    
-    if embedly.has_key('media'):
-        linkpost.media = json.dumps(embedly['media'])
-    
-    if linkpost.url is None:
-        linkpost.url = url
-    
-    try:
-        linkpost.url_author = embedly['authors'][0]
-    except IndexError:
-        pass
-    
-    linkpost.filter_url_content()
-
-
 @csrf_exempt
 def linkpost_create(request):
     # POST: url, uuid
     
     linkpost = LinkPost()
     linkpost.uuid = request.POST['uuid']
-    embedlify_linkpost(linkpost, request.POST['url'])
+    linkpost.scrape(request.POST['url'])
     linkpost.save()
     
     return success(id = linkpost.id)
@@ -88,7 +35,7 @@ def linkpost_create_and_publish(request):
     for attribute in ['uuid', 'title', 'description']:
         linkpost.__dict__[attribute] = request.POST[attribute]
     
-    embedlify_linkpost(linkpost, request.POST['url'])
+    linkpost.scrape(request.POST['url'])
     linkpost.publish()
     linkpost.save()
     
