@@ -28,7 +28,7 @@ module.exports = (e, r) ->
 
         pub_date: r.date_published or e.published
 
-        embedly_safe: e.safe
+        safe: e.safe
 
         favicon: e.favicon_url
 
