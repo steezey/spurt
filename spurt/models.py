@@ -56,16 +56,19 @@ class LinkPost(Post):
     title = CharField(max_length = 255)
     url = TextField()
     original_url = TextField()
-    description = TextField()
-    provider_name = CharField(max_length = 255, null = True)
-    provider_display = TextField(null = True)
-    favicon_url = TextField(null = True)
+    description = TextField(null = True)
     scraped_title = TextField(null = True)
-    scraped_description = TextField(null = True)
-    scraped_published = TextField(null = True)
-    scraped_content = TextField(null = True)
-    scraped_content_filtered = TextField(null = True)
-    scraped_author = TextField(null = True)
+    domain = TextField(null = True)
+    rddme_url = TextField(null = True)
+    author_name = TextField(null = True)
+    author = TextField(null = True)
+    dek = TextField(null = True)
+    lead = TextField(null = True)
+    lead_image = TextField(null = True)
+    pub_date = DateTimeField(null = True)
+    embedly_safe = TextField(null = True)
+    favicon = TextField(null = True)
+    content = TextField(null = True)
     kind = CharField(max_length = 255, default = 'link')
     
     def as_json_dict(self):
@@ -73,22 +76,24 @@ class LinkPost(Post):
         
         return dictionary
     
-    json_attributes = ['id',
+    json_attributes = [
+        'id',
         'title',
-        'published',
         'url',
         'original_url',
         'description',
-        'provider_name',
-        'provider_display',
-        'favicon_url',
-        'comment_set',
         'scraped_title',
-        'scraped_description',
-        'scraped_published',
-        'scraped_content',
-        'scraped_content_filtered',
-        'scraped_author',
+        'domain',
+        'rddme_url',
+        'author_name',
+        'author',
+        'dek',
+        'lead',
+        'lead_image',
+        'pub_date',
+        'embedly_safe',
+        'favicon',
+        'content',
         'kind']
     
     def scrape(self, url):
@@ -105,7 +110,7 @@ class LinkPost(Post):
         print('THERE')
         
         for attribute in scraped.keys():
-            self.__dict__['scraped_' + attribute] = scraped[attribute]
+            self.__dict__[attribute] = scraped[attribute]
         
         self.save()
 
@@ -114,7 +119,8 @@ class TextPost(Post):
     content = TextField()
     kind = CharField(max_length = 255, default = 'text')
     
-    json_attributes = ['id',
+    json_attributes = [
+        'id',
         'title',
         'published',
         'content',

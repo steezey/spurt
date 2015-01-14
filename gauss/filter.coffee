@@ -6,7 +6,7 @@ module.exports = (e, r) ->
     # For docs, see scraping-methodology.md.
     
     scraped = 
-        title: e.title or r.title
+        scraped_title: e.title or r.title
 
         domain: r.domain or e.provider_display
 

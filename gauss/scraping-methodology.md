@@ -4,13 +4,20 @@ Result
 
 The resulting object has the following fields:
 
-title
+scraped_title
 domain
-description
-pub_date
-content
-author
+original_url
+url
+rddme_url
 author_name
+author
+dek
+lead
+lead_image
+pub_date
+embedly_safe
+favicon
+content
 
 Readability
 ======
@@ -125,7 +132,7 @@ Methodology
 
 Except for the "content" and "content_filtered" fields, we take all fields directly from embedly, readability, or the given url. The following lists each field followed by a dash a comma-separated list of fields we search for the value. Fields from embedly are written "e.field_name" and fields from readability are written "r.field_name".
 
-title - e.title, r.title
+scraped_title - e.title, r.title
 
 domain - r.domain, e.provider_display
 
