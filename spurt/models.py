@@ -97,7 +97,12 @@ class LinkPost(Post):
             '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
             '&url=' + url
         
+        print('HERE')
+        print(gauss_url)
+        
         scraped = json.loads(urllib2.urlopen(gauss_url).read())
+        
+        print('THERE')
         
         for attribute in scraped.keys():
             self.__dict__['scraped_' + attribute] = scraped[attribute]
