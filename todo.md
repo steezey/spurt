@@ -1,4 +1,7 @@
 
+2015-01-14
+==========
+
 - customize content html based on:
     - embedly "content" field
     - embedly "media" field (sometimes null)

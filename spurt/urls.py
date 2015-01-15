@@ -40,3 +40,11 @@ urlpatterns = patterns('',
     # Create new comment. POST: (optional) parent_id, post_id, uuid, content
     url(r'^comments/create', views.comment_create),
 )
+
+"""
+
+API Note:
+
+A link post has the following attributes: id, title, url, original_url, description, scraped_title, domain, rddme_url, author_name, author, dek, lead, lead_image, pub_date, embedly_safe, favicon, content, kind
+
+"""
