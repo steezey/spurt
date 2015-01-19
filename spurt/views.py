@@ -165,3 +165,14 @@ def comment_create(request):
     comment.save()
     
     return success(id = comment.id)
+
+@csrf_exempt
+def auth_code(request):
+    try:
+        user = User.objects.get(uuid = request.GET['uuid'])
+    except ObjectDoesNotExist:
+        user = User()
+        user.uuid = request.GET['uuid']
+        user.save()
+    
+    return success(auth_code = user.get_or_create_auth_code())

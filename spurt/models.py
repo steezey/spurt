@@ -1,13 +1,16 @@
 
 import datetime
-import json
+import random
 import re
+import json
 import urlparse
 import urllib2
 
+from django.utils import timezone
 from django.db.models import Model, BooleanField, NullBooleanField, CommaSeparatedIntegerField, EmailField, IPAddressField, GenericIPAddressField, URLField, FileField, ImageField, CharField, TextField, DateField, DateTimeField, TimeField, BigIntegerField, DecimalField, FloatField, IntegerField, PositiveIntegerField, PositiveSmallIntegerField, SmallIntegerField, ForeignKey, ManyToManyField, OneToOneField
 
 class InvalidURL(Exception): pass
+class AuthCodeOverflow(Exception): pass
 
 class JSONable:
     def as_json_dict(self):
@@ -52,7 +55,7 @@ class Post(Model, JSONable):
     
     def publish(self):
         self.published = True
-        self.published_date = datetime.datetime.now()
+        self.published_date = timezone.now()
         self.save()
 
 class LinkPost(Post):
@@ -152,3 +155,50 @@ class Comment(Model, JSONable):
     
     def children(self):
         return list(Comment.objects.filter(parent = self))
+
+class User(Model):
+    uuid = TextField()
+    auth_code = CharField(null = True, db_index = True, max_length = 255)
+    auth_code_expiry = DateTimeField(null = True)
+    
+    AUTH_CODE_DIGITS = 4
+    AUTH_CODE_MAX = 10 ** AUTH_CODE_DIGITS
+    AUTH_CODE_SHELF_LIFE = datetime.timedelta(0, 300, 0)
+    
+    def create_auth_code(self):
+        now = timezone.now()
+        
+        if User.AUTH_CODE_MAX <= User.objects\
+                .filter(
+                    auth_code__isnull = False,
+                    auth_code_expiry__gte = now)\
+                .count():
+            raise AuthCodeOverflow('Cannot assign more auth codes.')
+        
+        proposed = str(random.randint(0, User.AUTH_CODE_MAX - 1))
+        
+        # pad proposed with zeros
+        proposed = '0' * (User.AUTH_CODE_DIGITS - len(proposed)) + proposed
+        
+        if User.objects\
+                .filter(
+                    auth_code = proposed,
+                    auth_code_expiry__gte = now)\
+                .exists():
+            return self.create_auth_code()
+        else:
+            self.auth_code = proposed
+            self.auth_code_expiry = \
+                timezone.now() + User.AUTH_CODE_SHELF_LIFE
+            self.save()
+            
+            return self.auth_code
+    
+    def get_or_create_auth_code(self):
+        now = timezone.now()
+        
+        if (self.auth_code != None and \
+            now <= self.auth_code_expiry):
+            return self.auth_code
+        else:
+            return self.create_auth_code()

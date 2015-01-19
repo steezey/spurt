@@ -1,4 +1,7 @@
 
+- austin: update frontend
+- austin: swipe left to comments, swipe right to public/inbox
+
 2015-01-14
 ==========
 
