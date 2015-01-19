@@ -48,6 +48,11 @@ module.exports = (e, r, html) ->
     if e.media isnt undefined and e.media.type isnt undefined
         if e.media.type is 'photo'
             scraped.content = "<img src='#{e.media.url}>"
+        else if e.media.type is 'video'
+            $('body').html(e.media.html)
+            $('iframe.embedly-embed').map((i, e) ->
+                $(e).attr('src', 'http:' + $(e).attr('src')))
+            scraped.content = $('body').html()
         else
             scraped.content = e.media.html
         scraped.content_filtered = scraped.content
