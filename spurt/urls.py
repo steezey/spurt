@@ -40,8 +40,11 @@ urlpatterns = patterns('',
     # Create new comment. POST: (optional) parent_id, post_id, uuid, content
     url(r'^comments/create', views.comment_create),
     
+    # Get uuid associated with auth code. GET: auth_code
+    url(r'^auth-code-to-uuid', views.auth_code_to_uuid),
+    
     # Get current auth code. GET: uuid
-    url(r'^auth-code', views.auth_code)
+    url(r'^auth-code', views.auth_code),
 )
 
 """

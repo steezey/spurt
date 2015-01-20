@@ -176,3 +176,10 @@ def auth_code(request):
         user.save()
     
     return success(auth_code = user.get_or_create_auth_code())
+
+def auth_code_to_uuid(request):
+    user = get_object_or_404(User, auth_code = request.GET['auth_code'])
+    if user.auth_code_expiry < timezone.now():
+        return failure(message = 'Auth code expired.')
+    else:
+        return success(uuid = user.uuid)
