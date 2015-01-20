@@ -119,7 +119,8 @@ class LinkPost(Post):
         gauss_url = \
             'http://gauss.elasticbeanstalk.com/' + \
             '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
-            '&url=' + url.geturl()
+            '&url=' + urllib2.quote(
+                unicode(url.geturl()).encode('utf-8'), safe='~()*!.\'')
         
         scraped = json.loads(urllib2.urlopen(gauss_url).read())
         

@@ -1,4 +1,5 @@
 
+assert = require('assert')
 app = require('express')()
 request = require('request')
 
@@ -13,9 +14,10 @@ createJoin = (n, c) ->
             c.apply({}, args)
 
 app.get('/', (req, res) ->
+    console.log(req.query)
     if req.query.key isnt env.key
         console.log('ERROR: Bad key.')
-        res.end('ERROR: Bad key.')
+        res.end('ERROR: Bad key.\n')
     else
         joinFilter = createJoin(3, ->
             console.log('Received sources.')
@@ -26,7 +28,9 @@ app.get('/', (req, res) ->
             console.log('Responded.'))
         
         sources = {}
-        url = req.query.url
+        url = decodeURIComponent(req.query.url)
+        
+        console.log(url)
         
         embedly(url, (obj) -> 
             sources.embedly = obj
@@ -37,7 +41,7 @@ app.get('/', (req, res) ->
             joinFilter())
         
         request(url, (error, res, body) ->
-            console.log(error, res)
+            assert.ifError(error)
             console.log(body[0...100])
             sources.page = body
             joinFilter()))

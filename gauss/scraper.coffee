@@ -21,7 +21,7 @@ module.exports = (scraperURL, dbName) ->
                 if 0 < objs.length
                     callback(JSON.parse(objs[0].response))
                 else
-                    request(scraperURL + url,
+                    request(scraperURL + encodeURIComponent(url),
                         (error, res, body) ->
                             if not error
                                 callback(JSON.parse(body))

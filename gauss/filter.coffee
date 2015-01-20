@@ -1,6 +1,7 @@
 
 _ = require('customscore')
 $ = require('jquery')(require('jsdom').jsdom().parentWindow)
+sanitizeHtml = require('sanitize-html')
 
 module.exports = (e, r, html) ->
     # For docs, see scraping-methodology.md.
@@ -43,7 +44,7 @@ module.exports = (e, r, html) ->
         Set content to r.content, e.content.
         Set content_filtered to the paragraph and image elements of content.
 
-    ###    
+    ###
     
     if e.media isnt undefined and e.media.type isnt undefined
         if e.media.type is 'photo'
@@ -61,12 +62,8 @@ module.exports = (e, r, html) ->
         if scraped.content?
             TAGS_TO_SCRAPE = 'p img h1 h2 h3 h4 h5 h6'.split(' ')
             
-            $('body').html(scraped.content)
-            tags = $(TAGS_TO_SCRAPE.join(', '))
-            
-            scraped.content_filtered = _.chain(tags)
-                    .pluck('outerHTML')
-                    .value()
-                    .join('')
+            scraped.content_filtered = sanitizeHtml(
+                scraped.content,
+                allowedTags: TAGS_TO_SCRAPE)
     
     return scraped
