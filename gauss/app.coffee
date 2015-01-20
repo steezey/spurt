@@ -14,7 +14,6 @@ createJoin = (n, c) ->
             c.apply({}, args)
 
 app.get('/', (req, res) ->
-    console.log(req.query)
     if req.query.key isnt env.key
         console.log('ERROR: Bad key.')
         res.end('ERROR: Bad key.\n')
@@ -29,8 +28,6 @@ app.get('/', (req, res) ->
         
         sources = {}
         url = decodeURIComponent(req.query.url)
-        
-        console.log(url)
         
         embedly(url, (obj) -> 
             sources.embedly = obj
