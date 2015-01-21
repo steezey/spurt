@@ -164,7 +164,7 @@ class User(Model):
     
     AUTH_CODE_DIGITS = 4
     AUTH_CODE_MAX = 10 ** AUTH_CODE_DIGITS
-    AUTH_CODE_SHELF_LIFE = datetime.timedelta(0, 300, 0)
+    AUTH_CODE_SHELF_LIFE = datetime.timedelta(0, 600, 0)
     
     def create_auth_code(self):
         now = timezone.now()
