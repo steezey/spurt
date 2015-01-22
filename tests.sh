@@ -1,14 +1,10 @@
 
-echo 'Starting node...'
+curl localhost:8000/link-posts/create-and-publish --data "uuid=test_uuid&url=http://www.youtube.com&title=test_title&description=test_description"
 
-node gauss/server.js &
+curl localhost:8000/link-posts/create --data "uuid=test_uuid&url=http://www.youtube.com"
 
-PIDS[0]=$!
+curl localhost:8000/auth-code?uuid=test_uuid
 
-echo 'Running tests...'
+curl localhost:8000/posts/public > temp/tests/public.html && open temp/tests/public.html
 
-./manage.py 'test'
-
-trap "kill ${PIDS[*]}" SIGINT
-
-wait
+curl localhost:8000/posts/inbox?uuid=test_uuid > temp/tests/inbox.html && open temp/tests/inbox.html

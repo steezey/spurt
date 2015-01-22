@@ -77,7 +77,6 @@ def linkpost_publish(request):
 
 @csrf_exempt
 def linkpost_receive_scrape(request):
-    print('here')
     copy = {key: request.POST[key] for key in request.POST.keys()}
     LinkPost.receive_scrape(copy)
     

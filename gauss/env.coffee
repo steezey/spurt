@@ -10,7 +10,10 @@ else
 
 exports.key = '4a9fdf362ffff48fc64f2c3621166a75'
 
-exports.url = 
-    receive_scrape: 
-        # 'http://spurt.elasticbeanstalk.com/link-posts/receive-scrape'
-        'http://localhost:8000/link-posts/receive-scrape'
+exports.url = {}
+    
+
+if exports.isProd
+    exports.url.receive_scrape = 'http://spurt.elasticbeanstalk.com/link-posts/receive-scrape'
+else
+    exports.url.receive_scrape = 'http://localhost:8000/link-posts/receive-scrape'

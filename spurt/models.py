@@ -98,7 +98,7 @@ class LinkPost(Post):
         'dek',
         'lead',
         'lead_image',
-        'pub_date',
+        'scraped_pub_date',
         'embedly_safe',
         'favicon',
         'content',
@@ -135,7 +135,7 @@ class LinkPost(Post):
             fragment = url.fragment)
         
         gauss_url = \
-            'http://localhost:8004/' + \
+            'http://gauss.elasticbeanstalk.com/' + \
             '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
             '&scrape_token=' + self.generate_scrape_token() + \
             '&url=' + urllib2.quote(
@@ -147,7 +147,6 @@ class LinkPost(Post):
     
     @classmethod
     def receive_scrape(self, scraped):
-        print(scraped)
         linkpost = self.objects.get(scrape_token = scraped['scrape_token'])
         del scraped['scrape_token']
         linkpost.save_scrape(scraped)
