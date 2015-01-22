@@ -23,7 +23,7 @@ def linkpost_create(request):
     try:
         linkpost = LinkPost()
         linkpost.uuid = request.POST['uuid']
-        linkpost.scrape(request.POST['url'])
+        linkpost.request_scrape(request.POST['url'])
         linkpost.save()
         
         return success(id = linkpost.id)
@@ -39,7 +39,7 @@ def linkpost_create_and_publish(request):
         linkpost.__dict__[attribute] = request.POST[attribute]
     
     try:
-        linkpost.scrape(request.POST['url'])
+        linkpost.request_scrape(request.POST['url'])
         linkpost.publish()
         linkpost.save()
         
@@ -73,6 +73,14 @@ def linkpost_publish(request):
             request.POST.get(attribute, linkpost.__dict__[attribute])
     linkpost.publish()
     linkpost.save()
+    return success()
+
+@csrf_exempt
+def linkpost_receive_scrape(request):
+    print('here')
+    copy = {key: request.POST[key] for key in request.POST.keys()}
+    LinkPost.receive_scrape(copy)
+    
     return success()
 
 @csrf_exempt

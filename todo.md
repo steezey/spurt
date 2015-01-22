@@ -1,4 +1,13 @@
 
+2015-01-21
+==========
+
+- will: investigate backend laginess
+- will: remember to change localhost -> elasticbeanstalk!
+
+2015-01-20
+==========
+
 - austin: update frontend
 - austin: swipe left to comments, swipe right to public/inbox
 

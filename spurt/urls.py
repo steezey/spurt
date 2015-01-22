@@ -4,7 +4,7 @@ from django.contrib import admin
 from spurt import views
 
 urlpatterns = patterns('',
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin', include(admin.site.urls)),
     
     # Create link post and publish. POST: url, uuid, title, description
     url(r'^link-posts/create-and-publish', views.linkpost_create_and_publish),
@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     # Publish link post. POST: uuid, id, (optional) title, (optional)
     # description
     url(r'^link-posts/publish', views.linkpost_publish),
+    
+    # [Internal use] Receive scrape. GET: scrape_token
+    url(r'^link-posts/receive-scrape', views.linkpost_receive_scrape),
     
     # Create text post and publish. POST: title, content, uuid
     url(r'^text-posts/create-and-publish', views.textpost_create_and_publish),

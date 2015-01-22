@@ -1,7 +1,8 @@
 
-import datetime
+import string
 import random
 import re
+import datetime
 import json
 import urlparse
 import urllib2
@@ -71,11 +72,12 @@ class LinkPost(Post):
     dek = TextField(null = True)
     lead = TextField(null = True)
     lead_image = TextField(null = True)
-    pub_date = DateTimeField(null = True)
+    scraped_pub_date = DateTimeField(null = True)
     embedly_safe = TextField(null = True)
     favicon = TextField(null = True)
     content = TextField(null = True)
     kind = CharField(max_length = 255, default = 'link')
+    scrape_token = TextField(null = True)
     
     def as_json_dict(self):
         dictionary = Post.as_json_dict(self)
@@ -92,7 +94,7 @@ class LinkPost(Post):
         'domain',
         'rddme_url',
         'author_name',
-        'author',
+        'authors',
         'dek',
         'lead',
         'lead_image',
@@ -102,7 +104,23 @@ class LinkPost(Post):
         'content',
         'kind']
     
-    def scrape(self, url):
+    SCRAPE_TOKEN_LENGTH = 128
+    SCRAPE_TOKEN_ALPHABET = \
+        string.ascii_uppercase + \
+        string.ascii_lowercase + \
+        string.digits
+    
+    def generate_scrape_token(self):
+        token = ''.join(
+            random.choice(LinkPost.SCRAPE_TOKEN_ALPHABET) \
+            for _ in range(LinkPost.SCRAPE_TOKEN_LENGTH))
+        
+        self.scrape_token = token
+        self.save()
+        
+        return token
+    
+    def request_scrape(self, url):
         url = urlparse.urlparse(url)
         
         if url.netloc is '':
@@ -117,17 +135,35 @@ class LinkPost(Post):
             fragment = url.fragment)
         
         gauss_url = \
-            'http://gauss.elasticbeanstalk.com/' + \
+            'http://localhost:8004/' + \
             '?key=4a9fdf362ffff48fc64f2c3621166a75' + \
+            '&scrape_token=' + self.generate_scrape_token() + \
             '&url=' + urllib2.quote(
                 unicode(url.geturl()).encode('utf-8'), safe='~()*!.\'')
         
-        scraped = json.loads(urllib2.urlopen(gauss_url).read())
+        urllib2.urlopen(gauss_url)
         
+        self.save()
+    
+    @classmethod
+    def receive_scrape(self, scraped):
+        print(scraped)
+        linkpost = self.objects.get(scrape_token = scraped['scrape_token'])
+        del scraped['scrape_token']
+        linkpost.save_scrape(scraped)
+    
+    def save_scrape(self, scraped):
         for attribute in scraped.keys():
             self.__dict__[attribute] = scraped[attribute]
         
-        self.save()
+        try: 
+            self.save()
+        except Exception as e:
+            for attribute in scraped.keys():
+                self.__dict__[attribute] = None
+            
+            self.scrape_token = str(e)
+            self.save()
 
 class TextPost(Post):
     title = CharField(max_length = 255)
