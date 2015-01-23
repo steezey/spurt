@@ -20,6 +20,8 @@ module.exports = (e, r, html) ->
         
         rddme_url: r.short_url
         
+        provider_name: e.provider_name
+        
         author_name: r.author or (e.authors[0] ? {}).name
         
         authors: JSON.stringify(

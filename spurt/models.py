@@ -67,6 +67,7 @@ class LinkPost(Post):
     scraped_title = TextField(null = True)
     domain = TextField(null = True)
     rddme_url = TextField(null = True)
+    provider_name = TextField(null = True)
     author_name = TextField(null = True)
     authors = TextField(null = True)
     dek = TextField(null = True)
@@ -93,6 +94,7 @@ class LinkPost(Post):
         'scraped_title',
         'domain',
         'rddme_url',
+        'provider_name',
         'author_name',
         'authors',
         'dek',
@@ -102,6 +104,7 @@ class LinkPost(Post):
         'embedly_safe',
         'favicon',
         'content',
+        'comment_set',
         'kind']
     
     SCRAPE_TOKEN_LENGTH = 128
