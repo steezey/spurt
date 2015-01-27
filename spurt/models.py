@@ -24,19 +24,26 @@ class JSONable:
             else:
                 dictionary[key] = self.__dict__[key]
         
+        # Convert datetimes to strings
+        for attribute in dictionary.keys():
+            if dictionary[attribute].__class__ == datetime.datetime:
+                dictionary[attribute] = str(dictionary[attribute])
+        
         return dictionary
     
     def as_json(self):
-        return json.dumps(self.as_json_dict)
+        dictionary = self.as_json_dict()
+        
+        return json.dumps(dictionary)
     
     @classmethod
     def all_as_json_dicts(self):
-        return self.all.map(
-            lambda jsonable: jsonable.as_json_dict)
+        return self.all().map(
+            lambda jsonable: jsonable.as_json_dict())
     
     @classmethod
     def all_as_json(self):
-        return json.dumps(self.all_as_json_dicts)
+        return json.dumps(self.all_as_json_dicts())
 
 class EmbedlyResponse(Model):
     url = TextField()

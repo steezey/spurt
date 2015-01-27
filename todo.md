@@ -3,7 +3,7 @@
 ==========
 
 - will: investigate backend laginess
-- will: remember to change localhost -> elasticbeanstalk!
+- will: remember to change localhost -> elasticbeanstalk.
 
 2015-01-20
 ==========
